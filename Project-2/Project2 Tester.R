@@ -1,6 +1,8 @@
 library("leaflet")
 library("dplyr")
 library("tidyr")
+library("kableExtra")
+library("knitr")
 
 # Objective 0: Downloading the necessary files from the database
 # Deaths
@@ -77,3 +79,28 @@ leaflet(data = confirmations_sums) %>%
 
 
 # Objective 2: Narrowing Down Hot Spots
+# Rearranging both confirmation_sums & deaths_sums to be in descending order based on values for confirmations & deaths
+# Confirmations
+confirmations_sums <- confirmations_sums %>%
+  arrange(desc(confirmations_sums[[4]]))
+# Deaths
+deaths_sums <- deaths_sums %>%
+  arrange(desc(deaths_sums[[4]]))
+# Creating a dataframe meant for the table to use. This includes a
+tally_table <- data.frame(
+  Rank = 1:nrow(confirmations_sums),
+  Country1 = confirmations_sums$Country.Region,
+  Count1 = confirmations_sums[[4]],
+  Country2 = deaths_sums$Country.Region,
+  Count2 = deaths_sums[[4]]
+)
+# Now to create the table itself with the kable package
+kable(
+  tally_table,
+  col.names = c("Rank", "Country", "Count", "Country", "Count")
+) %>%
+  add_header_above(c(
+    " " = 1,
+    "Confirmations" = 2,
+    "Deaths" = 2
+  ))
